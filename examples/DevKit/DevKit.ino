@@ -1,4 +1,5 @@
-// DO NOT CONNECT 5V TO TARGET DEVICE - TODO: add url
+// DO NOT CONNECT 5V TO TARGET DEVICE
+// See https://github.com/todd-herbert/absolute-mouse/blob/main/doc/self-powered/warning.md
 
 /*========================================================================
                            ~~~~   DevKit  ~~~~                            

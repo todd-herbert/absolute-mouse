@@ -70,7 +70,7 @@ AbsoluteMouse.set_dimensions(310, 175);
 AbsoluteMouse.click(5, -10)
 ```
 
-Available commands vary slightly depending or whether you `#define USE_MOUSE` or `#define USE_STYLUS`. For a full list of commands, see [/doc/]("./doc/"), or consult the `help` command in the DevKit terminal.
+Available commands vary slightly depending or whether you `#define USE_MOUSE` or `#define USE_STYLUS`. For a full list of commands, see [/doc/](https://github.com/todd-herbert/absolute-mouse/tree/main/doc/function_list/"), or consult the `help` command in the DevKit terminal.
 
 ---
 
@@ -79,7 +79,7 @@ Determining the correct command and position for each mouse operation can be a t
 
 Flash the sketch to your UNO and open a serial monitor (9600 baud) to access a commandline for executing absolute-mouse commands.
 
-**Note: 5V should not be connected to target device when using DevKit**
+**Note: 5V should not be connected to target device when using DevKit.** <br />
 [Find out more](doc/self-powered/warning.md)
 
 ---

@@ -87,8 +87,8 @@ void print_help(char *command) {
     #ifdef USE_MOUSE
         else if(strcmp(command, "position") == 0) {
             Serial.println(F("position <x> <y>"));
-            Serial.println(F("\nMove the cursor to point (x,y), for display purposes."));
-            Serial.println(F("Command is not required for operation, but may be desired."));
+            Serial.println(F("\Move the cursor to point (x,y)"));
+            Serial.println(F("This low level command is not required for most operation, but may be helpful in certain situations."));
         }
         else if(strcmp(command, "middle_click") == 0) {
             Serial.println(F("middle_click <x> <y>"));
@@ -97,7 +97,7 @@ void print_help(char *command) {
         else if(strcmp(command, "scroll") == 0) {
             Serial.println(F("scroll <x> <y> <amount>"));
             Serial.println(F("\nPlace the cursor at point (x,y), then scroll by <amount> using the wheel."));
-            Serial.println(F("\nThe distance scrolled is, unfortunately, arbitrary."));
+            Serial.println(F("\nThe distance scrolled is consistent, but somewhat arbitrary. You will need to manually determine the correct value."));
         }
     #endif
     #ifdef USE_STYLUS
