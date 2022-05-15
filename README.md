@@ -70,7 +70,7 @@ AbsoluteMouse.set_dimensions(310, 175);
 AbsoluteMouse.click(5, -10)
 ```
 
-Available commands vary slightly depending or whether you `#define USE_MOUSE` or `#define USE_STYLUS`. For a full list of commands, see [/doc/](https://github.com/todd-herbert/absolute-mouse/tree/main/doc/function_list/"), or consult the `help` command in the DevKit terminal.
+Available commands vary slightly depending or whether you `#define USE_MOUSE` or `#define USE_STYLUS`. For a full list of commands, see [here](https://github.com/todd-herbert/absolute-mouse/tree/main/doc/function_list/), or consult the `help` command in the DevKit terminal.
 
 ---
 
