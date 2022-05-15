@@ -8,7 +8,9 @@ If you were to give your friend directions to your house:
  * Absolute Positioning - "My address is 32 Harris St"
  * Relative Positioning - "Drive 2km south, my house will be on the left"
 
-This library uses absolute mouse co-ordinates.
+This library uses absolute co-ordinates. <br />
+
+`click(30, 0)` could mean click "30 pixels" from left of screen. It could also mean "30mm" or "30%" depending on your config. See [Screen Dimensions](#screen-dimensions)
 
 If your application calls for Relative Positioning, I can recommend [glaukon-ariston's fork of UsbMouse](https://github.com/glaukon-ariston/UsbMouse)
 
