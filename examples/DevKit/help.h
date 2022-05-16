@@ -87,7 +87,7 @@ void print_help(char *command) {
     #ifdef USE_MOUSE
         else if(strcmp(command, "position") == 0) {
             Serial.println(F("position <x> <y>"));
-            Serial.println(F("\Move the cursor to point (x,y)"));
+            Serial.println(F("\nMove the cursor to point (x,y)"));
             Serial.println(F("This low level command is not required for most operation, but may be helpful in certain situations."));
         }
         else if(strcmp(command, "middle_click") == 0) {
