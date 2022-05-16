@@ -97,6 +97,8 @@ At this point, Timer0 remains enabled, however I will continue to monitor the si
 
 ## Installation
 
-Arduino: Library can be installed to Arduino IDE with Sketch -> Include Library -> Add .Zip Library.., or through the built-in Library Manager.
+More options to come shortly, following initial release of 0.1.0
 
-[Platform.io](https://platformio.org/): Available through the built-in library registiry, or alternatively, can be installed by extracting the Zip file to the lib folder of your project.
+~~Arduino: Library can be installed to Arduino IDE with Sketch -> Include Library -> Add .Zip Library.., or through the built-in Library Manager.~~
+
+~~[Platform.io](https://platformio.org/): Available through the built-in library registiry, or alternatively, can be installed by extracting the Zip file to the lib folder of your project.~~
