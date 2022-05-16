@@ -4,15 +4,17 @@
 Library to use Arduino UNO as USB mouse or stylus, using absolute positioning. Based on Obdev's VUSB driver, via [UsbMouse](https://github.com/meirm/UsbMouse)
 
 ### What is absolute positioning?
-If you were to give your friend directions to your house:
- * Absolute Positioning - "My address is 32 Harris St"
- * Relative Positioning - "Drive 2km south, my house will be on the left"
 
-This library uses absolute co-ordinates. <br />
 
-`click(30, 0)` could mean click "30 pixels" from left of screen. It could also mean "30mm" or "30%" depending on your config. See [Screen Dimensions](#screen-dimensions)
+| Absolute Positioning |         Relative Positioning     |
+|----------------------|----------------------------------|
+| Place the cursor 3cm from left edge, 10cm from top edge. | Move the cursor to the left and then down.|
 
-If your application calls for Relative Positioning, I can recommend [glaukon-ariston's fork of UsbMouse](https://github.com/glaukon-ariston/UsbMouse)
+This library uses absolute co-ordinates. It allows you to move the cursor to a fixed point, without user feedback.<br />
+
+Depending on your configuration, co-ordinates can be given in pixels, millimeters, percentages, or anything else you can dream up. See [Screen Dimensions](#screen-dimensions)
+
+If your application instead calls for Relative Positioning, I recommend [glaukon-ariston's fork of UsbMouse](https://github.com/glaukon-ariston/UsbMouse)
 
 ---
 
@@ -83,6 +85,13 @@ Flash the sketch to your UNO and open a serial monitor (9600 baud) to access a c
 
 **Note: 5V should not be connected to target device when using DevKit.** <br />
 [Find out more](doc/self-powered/warning.md)
+
+---
+
+## Timer0
+Many VUSB-based projects disable Timer0, stating that it interferes with USB timing. I haven't found this to be an issue, so long as the library internally avoids using Timer0 for timing.
+
+At this point, Timer0 remains enabled, however I will continue to monitor the situation.
 
 ---
 
