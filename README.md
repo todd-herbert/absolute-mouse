@@ -7,6 +7,7 @@ Based on Obdev's VUSB driver, via [UsbMouse](https://github.com/meirm/UsbMouse)
 The techniques used to deliver absolute positioning are slightly hacky. Because of this,  **your results may vary.** See [Configuration](#configuration)
 
 If you do not require absolute positioning, you may instead want to emulate a more traditional mouse with [glaukon-ariston's fork of UsbMouse](https://github.com/glaukon-ariston/UsbMouse). <br />
+<br />
 [Absolute Positioning](#what-is-absolute-positioning) <br />
 [Wiring](#wiring) <br />
 [Configuration](#configuration) <br />
