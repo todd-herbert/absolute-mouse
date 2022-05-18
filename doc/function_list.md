@@ -1,6 +1,6 @@
 # Function list
 
-`<>` indicate optional arguments, when `EMULATE_MOUSE` or `EMULATE_HYBRID`
+`<>` indicate optional arguments, when `EMULATE_MOUSE`
 
 ## begin
 #### `begin( <width>, <height> )`
@@ -25,15 +25,15 @@ Peform a double click at (x, y), or wherever the cursor is currently located.
 
 ## middle_click
 #### `middle_click( <x>, <y> )`
-**Only with `EMULATE_STYLUS` or `EMULATE_HYBRID`**
+**Only with `EMULATE_MOUSE` or `EMULATE_HYBRID`**
 Press the middle button (scroll wheel) at point (x,y), or wherever the cursor is currently located.
 
 ## long_press
-#### `long_press( <x>, <y>, duration)`
+#### `long_press( <x>, <y>, duration )`
 Press, at point (x, y), or wherever the cursor is currently located, for "duration" in milliseconds.
 
 ## scroll
-#### `scroll( <x>, <y>, amount)`
+#### `scroll( <x>, <y>, amount )`
 Place the cursor at point (x,y) if specified, then scroll by amount using the wheel. Postive values scroll down, negative values scroll up. The distance scrolled is consistent, but somewhat arbitrary. You will need to manually determine the correct value.
 
 

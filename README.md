@@ -4,12 +4,19 @@
 Arduino library to control cursor over USB, using absolute positioning. 
 Based on Obdev's VUSB driver, via [UsbMouse](https://github.com/meirm/UsbMouse)
 
-The techniques used to deliver absolute positioning are slightly hacky. Because of this,  **your results may vary.** See [Mode Selection](#mode-selection)
+The techniques used to deliver absolute positioning are slightly hacky. Because of this,  **your results may vary.** See [Configuration](#configuration)
 
-If you do not require absolute positioning, you may instead want to emulate a more traditional mouse with [glaukon-ariston's fork of UsbMouse](https://github.com/glaukon-ariston/UsbMouse).
+If you do not require absolute positioning, you may instead want to emulate a more traditional mouse with [glaukon-ariston's fork of UsbMouse](https://github.com/glaukon-ariston/UsbMouse). <br />
+[Absolute Positioning](#what-is-absolute-positioning)
+[Wiring](#wiring)
+[Configuration](#configuration)
+[Using the Library](#using-the-library)
+[DevKit](#devkit-sketch)
+[Timers](#timers)
+[Installation](#installation)
+<br />
 
 ### What is absolute positioning?
-
 
 | Absolute Positioning |         Relative Positioning     |
 |----------------------|----------------------------------|
@@ -55,9 +62,7 @@ Option | Description
 `#define POLL_WITH_TIMER2` | Keep connection alive using Timer 2
 `#define ENABLE_HOMING` | Re-align cursor before each command
 
-Profiles based on `EMULATE_STYLUS` (`PROFILE_ANDROID`) require x and y arguments with every command, whereas other profiles do not.
-
-Only `PROFILE_UBUNTU` uses timers; Timer 1 by default. Feel free to change this.
+`PROFILE_UBUNTU` and `PROFILE_WINXP` use timers; Timer 1 by default. Feel free to change this.
 ```cpp
 #define PROFILE_UBUNTU
 #define POLL_WITH_TIMER2
@@ -121,7 +126,7 @@ Flash the sketch to your UNO and open a serial monitor (9600 baud) to access a c
 ---
 
 ## Timers
-It appears that some operating systems require constant usb polling (every 50 ms or so). This is employed by `PROFILE_UBUNTU`. By default, this is handled by TIMER1. Because of the low frequency, TIMER1 is best suited. Because many other libraries make use of TIMER1, there is an option to instead use TIMER2, in conjuction with a counter. This should be saved as a backup, as it will use slightly more processing power
+It appears that some operating systems require constant usb polling (every 50 ms or so). This is employed by `PROFILE_UBUNTU` and `PROFILE_WINXP`. By default, this is handled by TIMER1. Because of the low frequency, TIMER1 is best suited. Because many other libraries make use of TIMER1, there is an option to instead use TIMER2, in conjuction with a counter. This should be saved as a backup, as it will use slightly more processing power
 
 Many VUSB-based projects disable Timer0, stating that it interferes with USB timing. I haven't found this to be an issue, so long as the library internally avoids using Timer0 for timing.
 
