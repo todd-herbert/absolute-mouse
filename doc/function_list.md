@@ -1,13 +1,13 @@
-# Function list - `USE_MOUSE`
+# Function list
 
-`<>` indicates an optional argument
+`<>` indicate optional arguments, when `EMULATE_MOUSE` or `EMULATE_HYBRID`
 
 ## begin
-#### `begin( <width>, <height>)`
+#### `begin( <width>, <height> )`
 Begin USB communications. Passing `<width>` and `<height>` sets the dimensions of the screen, in pixels, in mm, or any other system you find convenient.
 
 ## set_dimensions
-#### `set_dimensions( width, height)`
+#### `set_dimensions( width, height )`
 Sets the dimensions of the screen, in pixels, in mm, or any other system you find convenient.
 
 
@@ -25,6 +25,7 @@ Peform a double click at (x, y), or wherever the cursor is currently located.
 
 ## middle_click
 #### `middle_click( <x>, <y> )`
+**Only with `EMULATE_STYLUS` or `EMULATE_HYBRID`**
 Press the middle button (scroll wheel) at point (x,y), or wherever the cursor is currently located.
 
 ## long_press
@@ -55,3 +56,8 @@ Stop an indefinite press started by `hold`.
 ## position
 #### `position( x, y )`
 Move the cursor to point (x,y). This low level command is not required for most operation, but may be helpful in certain situations.
+
+## blink
+#### `blink ( x, y )`
+**Only with `EMULATE_STYLUS`**
+Force the cursor to briefly appear and dissapear. As `EMULATE_STYLUS` tends not to display a visible cursor, this function is useful in the DevKit, for figuring out co-ordinate values.

@@ -1,16 +1,16 @@
-#include "stylus/stylus.h"
+#include "hybrid/hybrid.h"
 #include "vusb/usbdrv.h"
 
 // Enabled or disabled by preprocessor to suit target OS
 extern void conditional_homing();
 
-void StylusDevice::begin(uint16_t width, uint16_t height) {
+void HybridDevice::begin(uint16_t width, uint16_t height) {
   set_dimensions(width, height);
   begin();
 }
 
 // Begin the USB connection properly
-void StylusDevice::begin() {
+void HybridDevice::begin() {
 
     PORTD = 0; // TODO: Only for USB pins?
     DDRD |= ~USBMASK;
@@ -25,39 +25,39 @@ void StylusDevice::begin() {
         
     sei();
 
-    // Wait one second for enumeration to finish. (Android USB OTG requires >500ms)
-    for(int i=0; i<2000; i++) {
+    // Wait two seconds for enumeration to finish. (Mac OS observed to take > 1000ms)
+    for(int i=0; i<2000; i+=tx_delay) {
         usbPoll();
-        delay_ms(1);
+        delay_ms(tx_delay);
     }    
 }
 
 // Bytes 2 - 5 of report_stylus, xy coords
-void StylusDevice::pos(uint16_t x, uint16_t y) {
+void HybridDevice::pos(uint16_t x, uint16_t y) {
 report_stylus[2] = x & 0xFF;
 report_stylus[3] = (x >> 8) & 0x7F;
 report_stylus[4] = y & 0xFF;
 report_stylus[5] = (y >> 8) & 0x7F;
 }
 
-// Send the report_stylus (Tell host what our auxilliary mouse is doing)
-void StylusDevice::update_mouse() {
-    usbPoll();
-    if (usbInterruptIsReady()) {
-        usbSetInterrupt(report_mouse, sizeof(report_mouse));
-    }
-}
-
 // Send the report_stylus (Tell host what our imaginary stylus is doing)
-void StylusDevice::update_stylus() {
+void HybridDevice::update_stylus() {
     usbPoll();
     if (usbInterruptIsReady()) {
         usbSetInterrupt(report_stylus, sizeof(report_stylus));
     }
 }
 
+// Send the report_stylus (Tell host what our relative mouse is doing)
+void HybridDevice::update_mouse() {
+    usbPoll();
+    if (usbInterruptIsReady()) {
+        usbSetInterrupt(report_mouse, sizeof(report_mouse));
+    }
+}
+
 // Encode the coordinate values for the HID report_stylus
-int16_t StylusDevice::encode_val(int16_t val, uint16_t op_edge) {
+int16_t HybridDevice::encode_val(int16_t val, uint16_t op_edge) {
   if (val < 0)  val = (op_edge + val) - 1;        // If negative, offset from opposite edge
   val = constrain((uint16_t)val, 0, op_edge);     // Clamp the value
   val = (((uint32_t)32767 * val) / op_edge);        // Scale to report_stylus val
@@ -65,108 +65,128 @@ int16_t StylusDevice::encode_val(int16_t val, uint16_t op_edge) {
 }
 
 // Set the dimensions (outside of begin())
-void StylusDevice::set_dimensions(uint16_t width, uint16_t height) {
+void HybridDevice::set_dimensions(uint16_t width, uint16_t height) {
   this->width = width;
   this->height = height;
 }
 
 // Move the cursor to (0,0), to force a position update in case user alters position between commands
 // (OS specific option)
-
-void StylusDevice::perform_homing() {
-  pos(0,0);
+void HybridDevice::perform_homing() {
+  pos(0, 0);
+  set_in_range(true);
   update_stylus();
   delay_ms(tx_delay);
 }
 
-// Display the cursor (for debugging)
-void StylusDevice::blink(int16_t x, int16_t y) {
+// Move the cursor (for display purposes)
+void HybridDevice::position(int16_t x, int16_t y) {
   x = encode_val(x, width);
   y = encode_val(y, height);
 
   //Move the stylus to the position
   conditional_homing();
   pos(x, y);
+  set_in_range(true);
   update_stylus();
   delay_ms(tx_delay);
 
-  //Show and hide cursor
-  for (uint8_t blink = 0; blink < 3; blink++) {
-    //Pen down
-    set_in_range(true);
-
-    for(uint16_t i = 0; i < 400; i+=tx_delay) {
-      update_stylus();
-      delay_ms(tx_delay);
-    }
-
-    //Pen up
-    set_in_range(false);
-
-    for(uint16_t i = 0; i < 400; i+=tx_delay) {
-      update_stylus();
-      delay_ms(tx_delay);
-    }
-  }
+  //Pen up
+  set_in_range(false);
+  update_stylus();
+  delay_ms(tx_delay);
 }
 
 // Click at the specified position
-void StylusDevice::click(int16_t x, int16_t y) {
+void HybridDevice::click(int16_t x, int16_t y) {
   x = encode_val(x, width);
   y = encode_val(y, height);
 
-  //Move the stylus to the position
+  //Move stylus
   conditional_homing();
   pos(x, y);
+  set_in_range(true);
   update_stylus();
   delay_ms(tx_delay);
 
-  //Pen down
-  set_in_range(true);
-  set_tip_switch(true);
-  update_stylus();
+  //mouse button down
+  set_left_button(true);
+  update_mouse();
 
   //Pause for click to register
   delay_ms(tx_delay);
 
-  //Pen up
+  //mouse button up
+  set_left_button(false);
+  update_mouse();
+  delay_ms(tx_delay);
+
+  //Remove the stylus
   set_in_range(false);
-  set_tip_switch(false);
   update_stylus();
+  delay_ms(tx_delay);
 }
 
 // Right click at the specified position
-void StylusDevice::right_click(int16_t x, int16_t y) {
+void HybridDevice::middle_click(int16_t x, int16_t y) {
   x = encode_val(x, width);
   y = encode_val(y, height);
 
   //Move the stylus to the position
   conditional_homing();
   pos(x, y);
+  set_in_range(true);
   update_stylus();
   delay_ms(tx_delay);
 
-  //Press barrel switch button, and pen down
-  set_in_range(true);
-  set_tip_switch(true);
-  set_barrel_switch(true);
-  update_stylus();
+  //Press the mouse right button
+  set_middle_button(true);
+  update_mouse();
 
   //Pause for click to register
   delay_ms(tx_delay);
 
-  //Release stylus button, and pen up
+  //Release mouse right button
+  set_middle_button(false);
+  update_mouse();
+  
+  //Remove the stylus
   set_in_range(false);
-  set_tip_switch(false);
-  set_barrel_switch(false);
   update_stylus();
+  delay_ms(tx_delay);
+}
+
+// Right click at the specified position
+void HybridDevice::right_click(int16_t x, int16_t y) {
+  x = encode_val(x, width);
+  y = encode_val(y, height);
+
+  //Move the stylus to the position
+  conditional_homing();
+  pos(x, y);
+  set_in_range(true);
+  update_stylus();
+  delay_ms(tx_delay);
+
+  //Press the mouse right button
+  set_right_button(true);
+  update_mouse();
+
+  //Pause for click to register
+  delay_ms(tx_delay);
+
+  //Release mouse right button
+  set_right_button(false);
+  update_mouse();
+
+  //Remove the stylus
+  set_in_range(false);
+  update_stylus();
+  delay_ms(tx_delay);
 }
 
 // Double click at the specified position
-void StylusDevice::double_click(int16_t x, int16_t y) {
-  //We could just call click() twice, but then it would recalculate all the values.
-  //We'll do it the long way.
-
+void HybridDevice::double_click(int16_t x, int16_t y) {
   x = encode_val(x, width);
   y = encode_val(y, height);
 
@@ -176,64 +196,69 @@ void StylusDevice::double_click(int16_t x, int16_t y) {
   update_stylus();
   delay_ms(tx_delay);
 
-  //Pen down
-  set_in_range(true);
-  set_tip_switch(true);
-  update_stylus();
+  //Button down
+  set_left_button(true);
+  update_mouse();
 
   //Pause for click to register
   delay_ms(tx_delay);
 
-  //Pen up
-  set_in_range(false);
-  set_tip_switch(false);
-  update_stylus();
+  //Button up
+  set_left_button(false);
+  update_mouse();
 
   //Pause between clicks
   delay_ms(100);
 
-  //Pen down, click number two
-  set_in_range(true);
-  set_tip_switch(true);
-  update_stylus();
+  //Button down, click number two
+  set_left_button(true);
+  update_mouse();
 
   //Pause for click to register
   delay_ms(tx_delay);
 
-  //Pen up
+  //Button up
+  set_left_button(false);
+  update_mouse();
+
+  //Remove the stylus
   set_in_range(false);
-  set_tip_switch(false);
   update_stylus();
+  delay_ms(tx_delay);
 }
 
 // Longpress at the specified position (mobile ui)
-void StylusDevice::long_press(int16_t x, int16_t y, uint16_t duration) {
+void HybridDevice::long_press(int16_t x, int16_t y, uint16_t duration) {
   x = encode_val(x, width);
   y = encode_val(y, height);
 
   //Move the stylus to the position
   conditional_homing();
   pos(x, y);
+  set_in_range(true);
   update_stylus();
   delay_ms(tx_delay);
 
-  //Pen down
-  set_in_range(true);
-  set_tip_switch(true);
-  update_stylus();
+  //Button down
+  set_left_button(true);
+  update_mouse();
 
   //Hold for the specified length
   for(uint16_t i = 0; i < duration; i += tx_delay)
     delay_ms(tx_delay);
 
-  //Pen up
+  //Button up
+  set_left_button(false);
+  update_mouse();
+
+  //Remove the stylus
   set_in_range(false);
-  set_tip_switch(false);
   update_stylus();
+  delay_ms(tx_delay);
 }
 
 // Perform a drag
-void StylusDevice::drag(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y, uint16_t duration) {
+void HybridDevice::drag(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y, uint16_t duration) {
   //Check if duration is reasonable
   if(duration <= 100)  duration = 100;
 
@@ -243,16 +268,17 @@ void StylusDevice::drag(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to
   to_x = encode_val(to_x, width);
   to_y = encode_val(to_y, height);
 
-  //Move the stylus to the start position
+  //Move the stylus to the start position, and contact the digitizer
   conditional_homing();
   pos(from_x, from_y);
-  update_stylus();
-  delay_ms(tx_delay);
-
-  //Pen down
   set_in_range(true);
   set_tip_switch(true);
   update_stylus();
+  delay_ms(tx_delay);
+
+  //mouse down
+  set_left_button(true);
+  update_mouse();
   delay_ms(tx_delay);
 
   //Move gradually towards end position
@@ -277,33 +303,43 @@ void StylusDevice::drag(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to
   update_stylus();
   delay_ms(tx_delay);
 
+  //Release mouse
+  set_left_button(false);
+  update_mouse();
+  delay_ms(tx_delay);
 
-  //Pen up
-  set_in_range(false);
+  //Remove stylus
   set_tip_switch(false);
+  set_in_range(false);
   update_stylus();
+  delay_ms(tx_delay);
 }
 
 // Press and hold indefinitely
-void StylusDevice::hold(int16_t x, int16_t y) {
+void HybridDevice::hold(int16_t x, int16_t y) {
   x = encode_val(x, width);
   y = encode_val(y, height);
 
   //Move the stylus to the position
   conditional_homing();
   pos(x, y);
+  set_in_range(true);
   update_stylus();
   delay_ms(tx_delay);
 
-  //Pen down
-  set_in_range(true);
+  // Also press stylus to digitizer, apparently required by MacOS for drag operations
   set_tip_switch(true);
   update_stylus();
+  delay_ms(tx_delay);
+
+  set_left_button(true);
+  update_mouse();
+  delay_ms(tx_delay);
 }
 
 // Travel (while already holding)
 // (no homing)
-void StylusDevice::travel(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y, uint16_t duration) {
+void HybridDevice::travel(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y, uint16_t duration = 0) {
   //Check if duration is reasonable
   if(duration <= 100)  duration = 100;
 
@@ -342,19 +378,26 @@ void StylusDevice::travel(int16_t from_x, int16_t from_y, int16_t to_x, int16_t 
   delay_ms(tx_delay);
 }
 
-// Release from StylusDevice::hold()
-void StylusDevice::release() {
+// Release from HybridDevice::hold()
+void HybridDevice::release() {
+  //Release mouse
+  set_left_button(false);
+  update_mouse();
+  delay_ms(tx_delay);
+
   //Pen up
   set_in_range(false);
   set_tip_switch(false);
   update_stylus();
+  delay_ms(tx_delay);
 }
 
-// Scroll using the secondary mouse device
-void StylusDevice::scroll(int16_t at_x, int16_t at_y, int16_t amount) {
+// Scroll using the mouse wheel
+void HybridDevice::scroll(int16_t at_x, int16_t at_y, int16_t amount) {
   at_x = encode_val(at_x, width);
   at_y = encode_val(at_y, height);
 
+  //Move the cursor to the position
   pos(at_x, at_y);
   set_in_range(true);
   update_stylus();
@@ -378,24 +421,6 @@ void StylusDevice::scroll(int16_t at_x, int16_t at_y, int16_t amount) {
   delay(tx_delay);
 
   //Remove the stylus
-  set_in_range(false);
-  update_stylus();
-  delay_ms(tx_delay);
-}
-
-// Move the cursor (for display purposes)
-void StylusDevice::position(int16_t x, int16_t y) {
-  x = encode_val(x, width);
-  y = encode_val(y, height);
-
-  //Move the stylus to the position
-  conditional_homing();
-  pos(x, y);
-  set_in_range(true);
-  update_stylus();
-  delay_ms(tx_delay);
-
-  //Pen up
   set_in_range(false);
   update_stylus();
   delay_ms(tx_delay);

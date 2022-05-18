@@ -479,7 +479,7 @@ extern
 #if !(USB_CFG_DESCR_PROPS_CONFIGURATION & USB_PROP_IS_RAM)
 PROGMEM
 #endif
-const char usbDescriptorConfiguration[];
+const unsigned char usbDescriptorConfiguration[];
 
 extern
 #if !(USB_CFG_DESCR_PROPS_HID_REPORT & USB_PROP_IS_RAM)

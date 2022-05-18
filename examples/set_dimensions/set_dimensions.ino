@@ -1,5 +1,8 @@
-#define USE_MOUSE
-//#define USE_STYLUS
+#define PROFILE_WINDOWS
+//#define PROFILE_WINXP
+//#define PROFILE_ANDROID
+//#define PROFILE_MAC
+//#define PROFILE_UBUNTU
 
 #include <absolute-mouse.h>
 

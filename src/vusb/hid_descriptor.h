@@ -2,6 +2,8 @@
 #define __HID_DESCRIPTOR_H__
 
 // This dataset describes our imaginary stylus / mouse device to the USB host, via the VUSB driver
+
+
 PROGMEM const uint8_t usbHidReportDescriptor[] =  { 
     //Mouse Report
     0x05, 0x01,                    // USAGE_PAGE (Generic Desktop)
@@ -54,8 +56,7 @@ PROGMEM const uint8_t usbHidReportDescriptor[] =  {
     0x09, 0x3c,                         //     USAGE (Invert)          
     0x81, 0x02,                         //     INPUT (Data,Var,Abs)       
     0x09, 0x45,                         //     USAGE (Eraser Switch)                   
-    0x81, 0x02,                         //     INPUT (Data,Var,Abs)         
-    0x95, 0x01,                         //     REPORT_COUNT (1)             
+    0x81, 0x02,                         //     INPUT (Data,Var,Abs)                   
     0x81, 0x03,                         //     INPUT (Cnst,Var,Abs)         
     0x09, 0x32,                         //     USAGE (In Range)             
     0x81, 0x02,                         //     INPUT (Data,Var,Abs)         

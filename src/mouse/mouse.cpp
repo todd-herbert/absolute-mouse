@@ -1,11 +1,8 @@
 #include "mouse/mouse.h"
 #include "vusb/usbdrv.h"
 
-extern PROGMEM const uint8_t usbHidReportDescriptor[]; //Scope the HID Report Descriptor into our class file
-
-// ==============================================================================
-// Methods for the main class
-
+// Enabled or disabled by preprocessor to suit target OS
+extern void conditional_homing();
 
 void MouseDevice::begin(uint16_t width, uint16_t height) {
   set_dimensions(width, height);
@@ -25,7 +22,6 @@ void MouseDevice::begin() {
     usbDeviceConnect();
 
     usbInit();
-        
     sei();
 
     // Wait one second for enumeration to finish. (Android USB OTG requires >500ms)
@@ -65,14 +61,24 @@ void MouseDevice::set_dimensions(uint16_t width, uint16_t height) {
   this->height = height;
 }
 
+// Move the cursor to (0,0), to force a position update in case user alters position between commands
+// (OS specific option)
+void MouseDevice::perform_homing() {
+  pos(0,0);
+  update();
+  delay_ms(tx_delay);
+}
+
 // Move the cursor (for display purposes)
 void MouseDevice::position(int16_t x, int16_t y) {
   x = encode_val(x, width);
   y = encode_val(y, height);
 
   //Move the cursor to the position
+  conditional_homing();
   pos(x, y);
   update();
+  delay_ms(tx_delay);
 }
 
 // Click at the specified position
@@ -93,6 +99,7 @@ void MouseDevice::click(int16_t x, int16_t y) {
   y = encode_val(y, height);
 
   //Move the cursor to the position
+  conditional_homing();
   pos(x, y);
   update();
   delay_ms(tx_delay);
@@ -118,6 +125,7 @@ void MouseDevice::middle_click(int16_t x, int16_t y) {
   y = encode_val(y, height);
 
   //Move the cursor to the position
+  conditional_homing();
   pos(x, y);
   update();
   delay_ms(tx_delay);
@@ -143,6 +151,7 @@ void MouseDevice::right_click(int16_t x, int16_t y) {
   y = encode_val(y, height);
 
   //Move the cursor to the position
+  conditional_homing();
   pos(x, y);
   update();
   delay_ms(tx_delay);
@@ -185,6 +194,7 @@ void MouseDevice::double_click(int16_t x, int16_t y) {
   y = encode_val(y, height);
 
   //Move the cursor to the position
+  conditional_homing();
   pos(x, y);
   update();
   delay_ms(tx_delay);
@@ -211,6 +221,7 @@ void MouseDevice::long_press(int16_t x, int16_t y, uint16_t duration) {
   y = encode_val(y, height);
 
   //Move the cursor to the position
+  conditional_homing();
   pos(x, y);
   update();
   delay_ms(tx_delay);
@@ -230,6 +241,7 @@ void MouseDevice::drag(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_
   to_y = encode_val(to_y, height);
 
   //Move the cursor to the start position
+  conditional_homing();
   pos(from_x, from_y);
   update();
   delay_ms(tx_delay);
@@ -278,6 +290,7 @@ void MouseDevice::hold(int16_t x, int16_t y) {
   y = encode_val(y, height);
 
   //Move the cursor to the position
+  conditional_homing();
   pos(x, y);
   update();
   delay_ms(tx_delay);
@@ -286,7 +299,8 @@ void MouseDevice::hold(int16_t x, int16_t y) {
 }
 
 // Travel (while already holding)
-void MouseDevice::travel(int16_t to_x, int16_t to_y, int16_t from_x, int16_t from_y, uint16_t duration = 0) {
+// (no homing)
+void MouseDevice::travel(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y, uint16_t duration) {
   //Check if duration is reasonable
   if(duration <= 100)  duration = 100;
 
@@ -349,6 +363,7 @@ void MouseDevice::scroll(int16_t amount) {
   //Clear the scroll wheel, relative value needs to return to 0
   report[6] = 0;
   update();
+  delay(tx_delay);
 }
 void MouseDevice::scroll(int16_t at_x, int16_t at_y, int16_t amount) {
   at_x = encode_val(at_x, width);

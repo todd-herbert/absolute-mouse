@@ -8,11 +8,9 @@
 
 void setup() {
     AbsoluteMouse.begin();
-
-    // Click and drag from near top left, to near bottom right, taking 2000ms
-    AbsoluteMouse.drag(25, 25, -25, -25, 2000);
+    AbsoluteMouse.click(50, 50);    // Click middle of screen
 }
 
-void loop() {
-    
+void loop() { 
+        
 }

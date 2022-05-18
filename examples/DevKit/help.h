@@ -1,17 +1,22 @@
 #ifndef __DEVKIT_HELP__
 #define __DEVKIT_HELP__
 
+#include <Arduino.h>
+
 void print_help() {
     Serial.println();
-    #ifdef USE_MOUSE 
-        Serial.println(F("Available commands (USE_MOUSE):"));
+    #ifdef EMULATE_MOUSE 
+        Serial.println(F("Available commands (EMULATE_MOUSE):"));
     #endif
-    #ifdef USE_STYLUS
-        Serial.println(F("Available commands (USE_STYLUS):"));
+    #ifdef EMULATE_STYLUS
+        Serial.println(F("Available commands (EMULATE_STYLUS):"));
+    #endif
+    #ifdef EMULATE_HYBRID
+        Serial.println(F("Available commands (EMULATE_HYBRID):"));
     #endif
 
     Serial.println();
-    Serial.println(F("connect"));
+    Serial.println(F("begin"));
     Serial.println(F("delay"));
     Serial.println(F("set_dimensions"));
     Serial.println(F("click"));
@@ -22,13 +27,13 @@ void print_help() {
     Serial.println(F("hold"));
     Serial.println(F("travel"));
     Serial.println(F("release"));
+    Serial.println(F("scroll"));
     
-    #ifdef USE_MOUSE
+    #if defined(EMULATE_MOUSE) || defined(EMULATE_HYBRID)
         Serial.println(F("middle_click"));
         Serial.println(F("position"));
-        Serial.println(F("scroll"));
     #endif
-    #ifdef USE_STYLUS
+    #ifdef EMULATE_STYLUS
         Serial.println(F("blink"));
     #endif
 
@@ -37,9 +42,9 @@ void print_help() {
 }
 
 void print_help(char *command) {
-    if(strcmp(command, "connect") == 0) {
-        Serial.println(F("connect"));
-        Serial.println(F("\nBegins a new USB connection. \nUsually only required when a device is not powered directly from its Host USB port \n(i.e. during this serial debugging session)"));
+    if(strcmp(command, "begin") == 0) {
+        Serial.println(F("begin  <screen_width> <screen_height>"));
+        Serial.println(F("\nBegins a new USB connection. \nUsually only required when a device is not powered directly from its Host USB port \n(i.e. during this serial debugging session)\nOptionally, pass <screen_width> and <screen_height> now. See \"help\" set_dimensions"));
     }
     else if(strcmp(command, "delay") == 0) {
         Serial.println(F("delay <duration>"));
@@ -83,8 +88,13 @@ void print_help(char *command) {
         Serial.println(F("release"));
         Serial.println(F("\nStop an indefinite press started with \"hold\""));
     }
+    else if(strcmp(command, "scroll") == 0) {
+        Serial.println(F("scroll <x> <y> <amount>"));
+        Serial.println(F("\nPlace the cursor at point (x,y), then scroll by <amount> using the wheel."));
+        Serial.println(F("\nThe distance scrolled is consistent, but somewhat arbitrary. You will need to manually determine the correct value."));
+    }
 
-    #ifdef USE_MOUSE
+    #if defined(EMULATE_MOUSE) || defined(EMULATE_HYBRID)
         else if(strcmp(command, "position") == 0) {
             Serial.println(F("position <x> <y>"));
             Serial.println(F("\nMove the cursor to point (x,y)"));
@@ -94,13 +104,8 @@ void print_help(char *command) {
             Serial.println(F("middle_click <x> <y>"));
             Serial.println(F("\nPress the middle button (scroll wheel) at point (x,y)"));
         }
-        else if(strcmp(command, "scroll") == 0) {
-            Serial.println(F("scroll <x> <y> <amount>"));
-            Serial.println(F("\nPlace the cursor at point (x,y), then scroll by <amount> using the wheel."));
-            Serial.println(F("\nThe distance scrolled is consistent, but somewhat arbitrary. You will need to manually determine the correct value."));
-        }
     #endif
-    #ifdef USE_STYLUS
+    #ifdef EMULATE_STYLUS
         else if(strcmp(command, "blink") == 0) {
             Serial.println(F("blink <x> <y>"));
         Serial.println(F("\nForce the cursor to briefly display, for debugging."));

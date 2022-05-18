@@ -1,6 +1,8 @@
 ## DevKit Precautions
 Many users of the DevKit sketch will be connecting their Arduino's Serial output to one machine, and the USB output to a separate target machine.
 
+Some devices, such as mobile phones, will welcome power on the 5V line. Other devices may not have been explicitly designed for this.
+
 It is advised that you do not connect 5V from the Arduino to your Target machine, only from your debugging machine to the Arduino.
 
 This removes the potential for a slightly imbalance in voltage between the two machines causes one 5V supply to "drive" the other.

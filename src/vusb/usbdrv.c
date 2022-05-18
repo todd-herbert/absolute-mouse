@@ -7,6 +7,7 @@
 
 #include "usbportability.h"
 #include "usbdrv.h"
+#include "hid_descriptor.h"
 /* odddebug.h removed */
 
 /*
@@ -136,7 +137,7 @@ PROGMEM const char usbDescriptorDevice[] = {    /* USB device descriptor */
 #if USB_CFG_DESCR_PROPS_CONFIGURATION == 0
 #undef USB_CFG_DESCR_PROPS_CONFIGURATION
 #define USB_CFG_DESCR_PROPS_CONFIGURATION   sizeof(usbDescriptorConfiguration)
-PROGMEM const char usbDescriptorConfiguration[] = {    /* USB configuration descriptor */
+PROGMEM const unsigned char usbDescriptorConfiguration[] = {    /* USB configuration descriptor */
     9,          /* sizeof(usbDescriptorConfiguration): length of descriptor in bytes */
     USBDESCR_CONFIG,    /* descriptor type */
     18 + 7 * USB_CFG_HAVE_INTRIN_ENDPOINT + 7 * USB_CFG_HAVE_INTRIN_ENDPOINT3 +
@@ -168,7 +169,7 @@ PROGMEM const char usbDescriptorConfiguration[] = {    /* USB configuration desc
     0x00,       /* target country code */
     0x01,       /* number of HID Report (or other HID class) Descriptor infos to follow */
     0x22,       /* descriptor type: report */
-    USB_CFG_HID_REPORT_DESCRIPTOR_LENGTH, 0,  /* total length of report descriptor */
+    USB_CFG_HID_REPORT_DESCRIPTOR_LENGTH & 0x7F, 00,  /* total length of report descriptor */
 #endif
 #if USB_CFG_HAVE_INTRIN_ENDPOINT    /* endpoint descriptor for endpoint 1 */
     7,          /* sizeof(usbDescrEndpoint) */

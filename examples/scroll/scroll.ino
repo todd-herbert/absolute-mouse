@@ -1,7 +1,8 @@
-// USE_MOUSE has several methods which are not available to USE_STYLUS
-
-#define USE_MOUSE
-//#define USE_STYLUS
+#define PROFILE_WINDOWS
+//#define PROFILE_WINXP
+//#define PROFILE_ANDROID
+//#define PROFILE_MAC
+//#define PROFILE_UBUNTU
 
 #include <absolute-mouse.h>
 
@@ -14,7 +15,7 @@ void setup() {
     AbsoluteMouse.position(50, 30); // Move the cursor to horizontal center, 30% from top
     delay(1000);
 
-    // With USE_MOUSE, several commands do not require explicit x and y arguments.
+    // With EMULATE_MOUSE, several commands do not require explicit x and y arguments.
     // The command will be performed wherever the cursor is currently placed
     AbsoluteMouse.click();
 

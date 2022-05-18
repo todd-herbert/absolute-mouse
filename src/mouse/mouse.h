@@ -26,6 +26,7 @@ class MouseDevice {
     // High level methods
     void set_dimensions(uint16_t width, uint16_t height);
     void position(int16_t x, int16_t y);
+    void perform_homing();
     void click();
     void click(int16_t x, int16_t y);
     void middle_click();
@@ -39,8 +40,7 @@ class MouseDevice {
     void drag(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y, uint16_t duration);
     void hold();
     void hold(int16_t x, int16_t y);
-    void travel(int16_t to_x, int16_t to_y, int16_t from_x, int16_t from_y, uint16_t duration);
-    void jump(int16_t to_x, int16_t to_y);
+    void travel(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y, uint16_t duration);
     void release();
     void scroll(int16_t amount);
     void scroll(int16_t at_x, int16_t at_y, int16_t amount);
@@ -66,4 +66,4 @@ class MouseDevice {
     uint16_t height = 100;
 };
 
-#endif //__ABSOLUTE_MOUSE_STYLUS_H__
+#endif //__ABSOLUTE_MOEMULATE_STYLUS_H__

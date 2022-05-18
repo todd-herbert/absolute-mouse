@@ -1,7 +1,12 @@
 # absolute-mouse
 
 
-Library to use Arduino UNO as USB mouse or stylus, using absolute positioning. Based on Obdev's VUSB driver, via [UsbMouse](https://github.com/meirm/UsbMouse)
+Arduino library to control cursor over USB, using absolute positioning. 
+Based on Obdev's VUSB driver, via [UsbMouse](https://github.com/meirm/UsbMouse)
+
+The techniques used to deliver absolute positioning are slightly hacky. Because of this,  **your results may vary.** See [Mode Selection](#mode-selection)
+
+If you do not require absolute positioning, you may instead want to emulate a more traditional mouse with [glaukon-ariston's fork of UsbMouse](https://github.com/glaukon-ariston/UsbMouse).
 
 ### What is absolute positioning?
 
@@ -14,8 +19,6 @@ This library uses absolute co-ordinates. It allows you to move the cursor to a f
 
 Depending on your configuration, co-ordinates can be given in pixels, millimeters, percentages, or anything else you can dream up. See [Screen Dimensions](#screen-dimensions)
 
-If your application instead calls for Relative Positioning, I recommend [glaukon-ariston's fork of UsbMouse](https://github.com/glaukon-ariston/UsbMouse)
-
 ---
 
 ## Wiring
@@ -27,16 +30,44 @@ You will get away with some deviation here (resistor values, level shifting alte
 
 ---
 
-## Using the library
-**You must define whether AbsoluteMouse should emulate a mouse or a stylus.**
+### Configuration
+**You must configure the library to match your target device.**
 
-This should be done at the top of your sketch, before you import the library. Both modes have their own benefits and limitations.
-Devices may respond best to one mode in particular: If you're having
-issues, try the other mode.
+This should be done at the top of your sketch, before you import the library. There are several preconfigured profiles available:
+
+Operating System | Profile
+---|---
+Android | `#define PROFILE_ANDROID`
+Mac OS | `#define PROFILE_MAC`
+Ubuntu | `#define PROFILE_UBUNTU`
+Windows 10 | `#define PROFILE_WINDOWS`
+Windows 7 | `#define PROFILE_WINDOWS`
+Windows XP | `#define PROFILE_WINXP`
+
+Alternatively, you can manually specify a custom profile:
+
+Option | Description
+:---|:---
+`#define EMULATE_MOUSE` | Control the cursor with a mouse
+`#define EMULATE_STYLUS` | Control the cursor with a pen
+`#define EMULATE_HYBRID` | Use a mixture of mouse and pen controls
+`#define POLL_WITH_TIMER1` | Keep connection alive using Timer 1
+`#define POLL_WITH_TIMER2` | Keep connection alive using Timer 2
+`#define ENABLE_HOMING` | Re-align cursor before each command
+
+Profiles based on `EMULATE_STYLUS` (`PROFILE_ANDROID`) require x and y arguments with every command, whereas other profiles do not.
+
+Only `PROFILE_UBUNTU` uses timers; Timer 1 by default. Feel free to change this.
+```cpp
+#define PROFILE_UBUNTU
+#define POLL_WITH_TIMER2
+``` 
+See [Timers](#timers) for more info.
+
+## Using the library
 
 ```cpp
-#define USE_MOUSE
-//#define USE_STYLUS
+#define PROFILE_WINDOWS
 
 #include <absolute-mouse.h>
 
@@ -45,8 +76,9 @@ void setup() {
     AbsoluteMouse.click(50, 50);    //Middle of screen
 }
 ```
+
 ### Screen Dimensions
-By default, absolute-mouse interprets co-ordinates as "percentages" (as in above example). You are encouraged to adjust this to suit your needs, by either:
+By default, absolute-mouse interprets co-ordinates as "percentages" (see example above). You are encouraged to adjust this to suit your needs, by either:
 
 ```cpp
 // Passing your dimensions during setup, or
@@ -55,7 +87,7 @@ AbsoluteMouse.begin(1440, 900);
 // Setting them manually when appropriate
 AbsoluteMouse.set_dimensions(1440, 900);
 ```
-You are free to define any width and height, so long as each value is less than 32768.
+You are free to define any width and height (less than 32768)
 Consider setting dimensions to your screen's width in mm: 
 
 ```cpp
@@ -74,7 +106,7 @@ AbsoluteMouse.set_dimensions(310, 175);
 AbsoluteMouse.click(5, -10)
 ```
 
-Available commands vary slightly depending or whether you `#define USE_MOUSE` or `#define USE_STYLUS`. For a full list of commands, see [here](https://github.com/todd-herbert/absolute-mouse/tree/main/doc/function_list/), or consult the `help` command in the DevKit terminal.
+Available commands vary slightly depending or which profile is selected. For a full list of commands, see [here](/doc/function_list.md), or consult the `help` command in the DevKit terminal.
 
 ---
 
@@ -88,7 +120,9 @@ Flash the sketch to your UNO and open a serial monitor (9600 baud) to access a c
 
 ---
 
-## Timer0
+## Timers
+It appears that some operating systems require constant usb polling (every 50 ms or so). This is employed by `PROFILE_UBUNTU`. By default, this is handled by TIMER1. Because of the low frequency, TIMER1 is best suited. Because many other libraries make use of TIMER1, there is an option to instead use TIMER2, in conjuction with a counter. This should be saved as a backup, as it will use slightly more processing power
+
 Many VUSB-based projects disable Timer0, stating that it interferes with USB timing. I haven't found this to be an issue, so long as the library internally avoids using Timer0 for timing.
 
 At this point, Timer0 remains enabled, however I will continue to monitor the situation.
@@ -97,8 +131,6 @@ At this point, Timer0 remains enabled, however I will continue to monitor the si
 
 ## Installation
 
-More options to come shortly, following initial release of 0.1.0
+Arduino: Library can be installed to Arduino IDE with Sketch -> Include Library -> Add .Zip Library.., or through the built-in Library Manager.
 
-~~Arduino: Library can be installed to Arduino IDE with Sketch -> Include Library -> Add .Zip Library.., or through the built-in Library Manager.~~
-
-~~[Platform.io](https://platformio.org/): Available through the built-in library registiry, or alternatively, can be installed by extracting the Zip file to the lib folder of your project.~~
+[Platform.io](https://platformio.org/): Available through the built-in library registiry, or alternatively, can be installed by extracting the Zip file to the lib folder of your project.
