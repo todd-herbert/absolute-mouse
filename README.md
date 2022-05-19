@@ -52,6 +52,14 @@ Windows 10 | `#define PROFILE_WINDOWS`
 Windows 7 | `#define PROFILE_WINDOWS`
 Windows XP | `#define PROFILE_WINXP`
 
+These profiles were tested prior to release, however some hardware may require additional configuration options. If in doubt, `POLL_WITH_TIMER1`. For example,
+
+```cpp
+// One USB hub tested with Windows 10 required additional polling
+#define PROFILE_WINDOWS
+#define POLL_WITH_TIMER1
+```
+
 Alternatively, you can manually specify a custom profile:
 
 Option | Description
@@ -68,6 +76,7 @@ Option | Description
 #define PROFILE_UBUNTU
 #define POLL_WITH_TIMER2
 ``` 
+
 See [Timers](#timers) for more info.
 
 ## Using the library
@@ -93,7 +102,7 @@ AbsoluteMouse.begin(1440, 900);
 // Setting them manually when appropriate
 AbsoluteMouse.set_dimensions(1440, 900);
 ```
-You are free to define any width and height (less than 32768)
+You are free to define any width and height (less than 32768).
 Consider setting dimensions to your screen's width in mm: 
 
 ```cpp
