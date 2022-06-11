@@ -1,5 +1,5 @@
 /*
- * This file describes a digitizer / graphics tablet device, along with supporting methods.
+ * This file describes a mouse device, along with supporting methods.
  * The included VUSB library will perform the appropriate USB communications.
  */
 
