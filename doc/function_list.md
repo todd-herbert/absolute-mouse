@@ -1,10 +1,12 @@
 # Function list
 
-`<>` indicate optional arguments, when `EMULATE_MOUSE`
+`<>` indicates arguments which may be omitted, when using profile `EMULATE_MOUSE`
 
 ## begin
-#### `begin( <width>, <height> )`
-Begin USB communications. Passing `<width>` and `<height>` sets the dimensions of the screen, in pixels, in mm, or any other system you find convenient.
+#### `begin()`
+#### `begin( width, height )`
+Begin USB communications. 
+Optionally, passing `width` and `height` here calls [set_dimensions()](#set_dimensions)
 
 ## set_dimensions
 #### `set_dimensions( width, height )`
